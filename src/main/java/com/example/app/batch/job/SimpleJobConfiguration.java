@@ -1,5 +1,6 @@
 package com.example.app.batch.job;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -15,22 +16,23 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class SimpleJobConfiguration {
 
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager platformTransactionManager;
+
     @Bean
-    public Job simpleJob1(JobRepository jobRepository, Step simpleStep1, Step simpleStep2) {
+    public Job simpleJob1() {
         return new JobBuilder("simpleJob", jobRepository)
-                .start(simpleStep1)
-                .next(simpleStep2)
+                .start(simpleStep1(null))
+                .next(simpleStep2(null))
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step simpleStep1(JobRepository jobRepository,
-                            PlatformTransactionManager platformTransactionManager,
-                            @Value("#{jobParameters[requestDate]}") String requestDate) {
-
+    public Step simpleStep1(@Value("#{jobParameters[requestDate]}") String requestDate) {
         return new StepBuilder("simpleStep1", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     log.info(">>>>> This is Step1");
@@ -42,10 +44,7 @@ public class SimpleJobConfiguration {
 
     @Bean
     @JobScope
-    public Step simpleStep2(JobRepository jobRepository,
-                            PlatformTransactionManager platformTransactionManager,
-                            @Value("#{jobParameters[requestDate]}") String requestDate) {
-
+    public Step simpleStep2(@Value("#{jobParameters[requestDate]}") String requestDate) {
         return new StepBuilder("simpleStep2", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     log.info(">>>>> This is Step2");
