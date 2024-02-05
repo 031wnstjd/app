@@ -30,6 +30,7 @@ public class JdbcPagingItemReaderJobConfiguration {
     private static final int CHUNK_SIZE = 10;
     private static final String JOB_NAME ="jdbcPagingItemReaderJob";
     private static final String STEP_NAME ="jdbcPagingItemReaderStep";
+    private static final String READER_NAME ="jdbcPagingItemReader";
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -63,7 +64,7 @@ public class JdbcPagingItemReaderJobConfiguration {
                 .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .queryProvider(createQueryProvider())
                 .parameterValues(parameterValues)
-                .name("jdbcPagingItemReader")
+                .name(READER_NAME)
                 .build();
     }
 

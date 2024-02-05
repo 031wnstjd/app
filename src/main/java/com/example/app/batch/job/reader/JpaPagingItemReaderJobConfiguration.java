@@ -23,6 +23,7 @@ public class JpaPagingItemReaderJobConfiguration {
     private static final int CHUNK_SIZE = 10;
     private static final String JOB_NAME = "jpaPagingItemReaderJob";
     private static final String STEP_NAME = "jpaPagingItemReaderStep";
+    private static final String READER_NAME = "jpaPagingItemReader";
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -47,7 +48,7 @@ public class JpaPagingItemReaderJobConfiguration {
     @Bean
     public ItemReader<Pay> jpaPagingItemReader() {
         return new JpaPagingItemReaderBuilder<Pay>()
-                .name("jpaPagingItemReader")
+                .name(READER_NAME)
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(CHUNK_SIZE)
                 .queryString("SELECT p FROM Pay p WHERE amount >= 2000 ORDER BY p.id")

@@ -23,8 +23,9 @@ import javax.sql.DataSource;
 public class JdbcCursorItemReaderJobConfiguration {
 
     private static final int CHUNK_SIZE = 10;
-    private static final String JOB_NAME ="jdbcCursorItemReaderJob";
-    private static final String STEP_NAME ="jdbcCursorItemReaderStep";
+    private static final String JOB_NAME = "jdbcCursorItemReaderJob";
+    private static final String STEP_NAME = "jdbcCursorItemReaderStep";
+    private static final String READER_NAME = "jdbcCursorItemReader";
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -53,7 +54,7 @@ public class JdbcCursorItemReaderJobConfiguration {
                 .dataSource(dataSource)
                 .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .sql("SELECT id, amount, tx_name, tx_date_time FROM pay")
-                .name("jdbcCursorItemReader")
+                .name(READER_NAME)
                 .build();
     }
 
