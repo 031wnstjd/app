@@ -1,4 +1,4 @@
-package com.example.app.batch.job.reader;
+package com.example.app.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +27,7 @@ public class Pay {
     private Long amount;
     private String txName;
     private LocalDateTime txDateTime;
-    private String successStatus;
+    private boolean successStatus;
 
     public Pay(Long amount, String txName, String txDateTime) {
         this.amount = amount;
@@ -35,11 +35,20 @@ public class Pay {
         this.txDateTime = LocalDateTime.parse(txDateTime, FORMATTER);
     }
 
-    public Pay(Long id, Long amount, String txName, String txDateTime, String successStatus) {
+    public Pay(Long id, Long amount, String txName, String txDateTime, boolean successStatus) {
         this.id = id;
         this.amount = amount;
         this.txName = txName;
         this.txDateTime = LocalDateTime.parse(txDateTime, FORMATTER);
         this.successStatus = successStatus;
+    }
+
+    public Pay(Long amount, boolean successStatus) {
+        this.amount = amount;
+        this.successStatus = successStatus;
+    }
+
+    public void success() {
+        this.successStatus = true;
     }
 }
