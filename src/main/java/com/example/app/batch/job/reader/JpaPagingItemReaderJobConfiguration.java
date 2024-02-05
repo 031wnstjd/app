@@ -1,5 +1,6 @@
 package com.example.app.batch.job.reader;
 
+import com.example.app.domain.Pay;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 public class JpaPagingItemReaderJobConfiguration {
 
-    private static final int CHUNK_SIZE = 10;
     private static final String JOB_NAME = "jpaPagingItemReaderJob";
     private static final String STEP_NAME = "jpaPagingItemReaderStep";
     private static final String READER_NAME = "jpaPagingItemReader";
@@ -28,6 +28,8 @@ public class JpaPagingItemReaderJobConfiguration {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final EntityManagerFactory entityManagerFactory;
+
+    private final int chunkSize = 10;
 
     @Bean
     public Job jpaPagingItemReaderJob() {
@@ -39,7 +41,7 @@ public class JpaPagingItemReaderJobConfiguration {
     @Bean
     public Step jpaPagingItemReaderStep() {
         return new StepBuilder(STEP_NAME, jobRepository)
-                .<Pay, Pay>chunk(CHUNK_SIZE, transactionManager)
+                .<Pay, Pay>chunk(chunkSize, transactionManager)
                 .reader(jpaPagingItemReader())
                 .writer(jpaPagingItemWriter())
                 .build();
@@ -50,7 +52,7 @@ public class JpaPagingItemReaderJobConfiguration {
         return new JpaPagingItemReaderBuilder<Pay>()
                 .name(READER_NAME)
                 .entityManagerFactory(entityManagerFactory)
-                .pageSize(CHUNK_SIZE)
+                .pageSize(chunkSize)
                 .queryString("SELECT p FROM Pay p WHERE amount >= 2000 ORDER BY p.id")
                 .build();
     }

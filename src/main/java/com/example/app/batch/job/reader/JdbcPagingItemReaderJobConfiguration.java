@@ -1,5 +1,6 @@
 package com.example.app.batch.job.reader;
 
+import com.example.app.domain.Pay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -27,7 +28,6 @@ import java.util.Map;
 @Configuration
 public class JdbcPagingItemReaderJobConfiguration {
 
-    private static final int CHUNK_SIZE = 10;
     private static final String JOB_NAME ="jdbcPagingItemReaderJob";
     private static final String STEP_NAME ="jdbcPagingItemReaderStep";
     private static final String READER_NAME ="jdbcPagingItemReader";
@@ -35,6 +35,8 @@ public class JdbcPagingItemReaderJobConfiguration {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final DataSource dataSource;
+
+    private final int chunkSize = 10;
 
     @Bean
     public Job jdbcPagingItemReaderJob() throws Exception {
@@ -46,7 +48,7 @@ public class JdbcPagingItemReaderJobConfiguration {
     @Bean
     public Step jdbcPagingItemReaderStep() throws Exception {
         return new StepBuilder(STEP_NAME, jobRepository)
-                .<Pay, Pay>chunk(CHUNK_SIZE, transactionManager)
+                .<Pay, Pay>chunk(chunkSize, transactionManager)
                 .reader(jdbcPagingItemReader())
                 .writer(jdbcPagingItemWriter())
                 .build();
@@ -58,8 +60,8 @@ public class JdbcPagingItemReaderJobConfiguration {
         parameterValues.put("amount", 2000);
 
         return new JdbcPagingItemReaderBuilder<Pay>()
-                .pageSize(CHUNK_SIZE)
-                .fetchSize(CHUNK_SIZE)
+                .pageSize(chunkSize)
+                .fetchSize(chunkSize)
                 .dataSource(dataSource)
                 .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .queryProvider(createQueryProvider())
